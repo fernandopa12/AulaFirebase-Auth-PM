@@ -1,7 +1,9 @@
 package com.fernando.aulafirebase
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -11,6 +13,15 @@ import com.google.firebase.auth.FirebaseAuth
 class MainActivity : AppCompatActivity() {
     private val binding by lazy{
         ActivityMainBinding.inflate(layoutInflater)
+    }
+
+    private val autenticacao by lazy{
+        FirebaseAuth.getInstance()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        verificarUsuarioLogado()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,30 +34,44 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        binding.btnExecutar.setOnClickListener{
-            cadastrarUsuario()
+        binding.btnCadastrarSe.setOnClickListener{
+            startActivity(Intent(this,CadastroActivity::class.java))
+        }
+
+        binding.btnLogin.setOnClickListener{
+            logarUsario()
         }
 
     }
 
     private fun cadastrarUsuario(){
-        val email  = "pf1963@fiap.com.br"
-        val senha = "Fernando@2024"
 
-        //Tela de cadastro do seu app..
-        val autenticacao = FirebaseAuth.getInstance()
+    }
 
-        //Passar os paramentros para criação do usuario $email e $senha
-        autenticacao.createUserWithEmailAndPassword(email,senha)
+    private fun verificarUsuarioLogado(){
+        val usuario = autenticacao.currentUser
+        //val id = autenticacao.currentUser?.uid
+
+        if(usuario!=null){
+            startActivity(Intent(this,LogadoActivity::class.java))
+        }
+    }
+
+    private fun logarUsario(){
+        val email  = binding.editEmail.text.toString()
+        val senha = binding.editSenha.text.toString()
+
+        autenticacao.signInWithEmailAndPassword(email,senha)
             .addOnSuccessListener { authResult->
-                val id = authResult.user?.uid
-                val email = authResult.user?.email
-
-                binding.txtResultado.text = "Sucesso ao criar conta.. $id - $email"
-            }.addOnFailureListener{exception ->
-                val mensagemErro = exception.message
-                binding.txtResultado.text = "Error: $mensagemErro"
-
+                startActivity(Intent(this,LogadoActivity::class.java))
+            }
+            .addOnFailureListener{exception->
+                AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Verificar e-mail e senha digitados..")
+                    .setNegativeButton("OK"){dialog,posicao->}
+                    .create()
+                    .show()
             }
     }
 }
