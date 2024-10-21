@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.fernando.aulafirebase" />
-                  <option name="mobileSdkAppId" value="1:1030406564093:android:e64760f6c3159742837694" />
-                  <option name="projectId" value="aulafirebase-a173d" />
-                  <option name="projectNumber" value="1030406564093" />
+                  <option name="mobileSdkAppId" value="1:228976931215:android:8ef65c1e561977c6405bfa" />
+                  <option name="projectId" value="aulafirebase-96ad8" />
+                  <option name="projectNumber" value="228976931215" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
