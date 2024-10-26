@@ -45,6 +45,9 @@ class LogadoActivity : AppCompatActivity() {
         binding.btnAtualizar.setOnClickListener{
             atualizarUsuario()
         }
+        binding.btnRemover.setOnClickListener{
+            removerUsuario()
+        }
 
     }
 
@@ -104,6 +107,30 @@ class LogadoActivity : AppCompatActivity() {
                     AlertDialog.Builder(this)
                         .setTitle("Error ao atualizar")
                         .setMessage("Registro não atualizado")
+                        .setNegativeButton("OK") { dialog, posicao -> }
+                        .create()
+                        .show()
+                }
+        }
+    }
+    private fun removerUsuario(){
+        val idUsuarioLogado = autenticacao.currentUser?.uid
+        if(idUsuarioLogado!=null){
+            bancoDados.collection("usuarios")
+                .document(idUsuarioLogado)
+                .delete()
+                .addOnSuccessListener {
+                    AlertDialog.Builder(this)
+                        .setTitle("SUCESSO AO REMOVER")
+                        .setMessage("Registros deletados com sucesso")
+                        .setNegativeButton("OK") { dialog, posicao -> }
+                        .create()
+                        .show()
+                }
+                .addOnFailureListener{
+                    AlertDialog.Builder(this)
+                        .setTitle("ERROR AO REMOVER")
+                        .setMessage("Não foi possível remover dados do usuário logado")
                         .setNegativeButton("OK") { dialog, posicao -> }
                         .create()
                         .show()

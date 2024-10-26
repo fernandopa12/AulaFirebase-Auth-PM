@@ -41,12 +41,12 @@ class MainActivity : AppCompatActivity() {
         binding.btnLogin.setOnClickListener{
             logarUsario()
         }
+        binding.textEsqueceuSenha.setOnClickListener{
+            esqueceuSenha()
+        }
 
     }
 
-    private fun cadastrarUsuario(){
-
-    }
 
     private fun verificarUsuarioLogado(){
         val usuario = autenticacao.currentUser
@@ -69,6 +69,26 @@ class MainActivity : AppCompatActivity() {
                 AlertDialog.Builder(this)
                     .setTitle("Error")
                     .setMessage("Verificar e-mail e senha digitados..")
+                    .setNegativeButton("OK"){dialog,posicao->}
+                    .create()
+                    .show()
+            }
+    }
+    private fun esqueceuSenha(){
+        val email = binding.editEmail.text.toString()
+        autenticacao.sendPasswordResetEmail(email)
+            .addOnSuccessListener {
+                AlertDialog.Builder(this)
+                    .setTitle("Sucesso")
+                    .setMessage("Enviado e-mail de redefinição")
+                    .setNegativeButton("OK"){dialog,posicao->}
+                    .create()
+                    .show()
+            }
+            .addOnFailureListener{
+                AlertDialog.Builder(this)
+                    .setTitle("Error")
+                    .setMessage("Não foi possível enviar e-mail de redefinição")
                     .setNegativeButton("OK"){dialog,posicao->}
                     .create()
                     .show()
