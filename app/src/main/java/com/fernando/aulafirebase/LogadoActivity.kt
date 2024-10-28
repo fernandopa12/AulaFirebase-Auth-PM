@@ -7,10 +7,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.fernando.aulafirebase.databinding.ActivityLogadoBinding
 import com.fernando.aulafirebase.databinding.ActivityMainBinding
+import com.fernando.aulafirebase.model.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.toObject
 
 class LogadoActivity : AppCompatActivity() {
     private val binding by lazy{
@@ -25,6 +28,9 @@ class LogadoActivity : AppCompatActivity() {
         FirebaseFirestore.getInstance()
     }
 
+    private lateinit var usuarioAdapter:UsuarioAdapter
+    private val listaUsuarios = mutableListOf<Usuario>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -34,6 +40,16 @@ class LogadoActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        //Configurando o RecyclerView
+        val recyclerView = binding.rvUsuarios
+        usuarioAdapter = UsuarioAdapter(listaUsuarios)
+        recyclerView.adapter = usuarioAdapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        //Chamando a função buscarDados
+        buscarDados()
+
         binding.btnDeslogar.setOnClickListener{
             autenticacao.signOut()
             startActivity(Intent(this,MainActivity::class.java))
@@ -48,7 +64,38 @@ class LogadoActivity : AppCompatActivity() {
         binding.btnRemover.setOnClickListener{
             removerUsuario()
         }
+        binding.btnListar.setOnClickListener{
+            listarDados()
+        }
 
+    }
+
+    private fun buscarDados() {
+        val idUsuarioLogado = autenticacao.currentUser?.uid
+
+        if (idUsuarioLogado != null) {
+            bancoDados
+                .collection("usuarios")
+                .document(idUsuarioLogado)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val usuario = document.toObject(Usuario::class.java)
+                        usuario?.let {
+                            listaUsuarios.clear()//Limpa a lista antes de buscar novos dados
+                            listaUsuarios.add(it)
+                            usuarioAdapter.notifyDataSetChanged()//Atualizar o recyclerView
+                        }
+                    }
+                }
+                .addOnFailureListener { execption ->
+                    AlertDialog.Builder(this)
+                        .setTitle("Erro")
+                        .setMessage("Falha ao carregar dados: ${execption.message}")
+                        .setNegativeButton("Ok", null)
+                        .create().show()
+                }
+        }
     }
 
     private fun salvarUsuario(){
@@ -134,6 +181,24 @@ class LogadoActivity : AppCompatActivity() {
                         .setNegativeButton("OK") { dialog, posicao -> }
                         .create()
                         .show()
+                }
+        }
+    }
+    private fun listarDados(){
+        val idUsuarioLogado = autenticacao.currentUser?.uid
+
+        if(idUsuarioLogado!=null){
+            bancoDados
+                .collection("usuarios")
+                .document(idUsuarioLogado)
+                .addSnapshotListener{valor,error->
+                    val dados = valor?.data
+                    if(dados!=null){
+                        val nomeCompleto = dados["nomeCompleto"]
+                        val telefone = dados["telefone"]
+
+                        binding.textViewLista.text = "Nome Completo: $nomeCompleto - Telefone:$telefone"
+                    }
                 }
         }
     }
