@@ -49,6 +49,8 @@ dependencies {
     //Dependencia do armazenamento..
     implementation("com.google.firebase:firebase-storage-ktx")
 
+    //Dependencia do Picasso
+    implementation ("com.squareup.picasso:picasso:2.8")
 
     implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
 

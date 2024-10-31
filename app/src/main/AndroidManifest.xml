@@ -13,13 +13,16 @@
         android:theme="@style/Theme.AulaFirebase"
         tools:targetApi="31">
         <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".CadastroActivity"
             android:exported="false" />
         <activity
             android:name=".LogadoActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".UploadImagemActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
